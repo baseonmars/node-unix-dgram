@@ -33,6 +33,7 @@ using v8::Function;
 using v8::FunctionTemplate;
 using v8::Handle;
 using v8::Integer;
+using v8::Isolate;
 using v8::Local;
 using v8::Null;
 using v8::Object;
@@ -124,7 +125,7 @@ void OnRecv(SocketContext* sc) {
                              argv);
 
   if (tc.HasCaught())
-    FatalException(tc);
+    FatalException(Isolate::GetCurrent(), tc);
 }
 
 void OnWritable(SocketContext* sc) {
@@ -133,7 +134,7 @@ void OnWritable(SocketContext* sc) {
   uv_poll_start(&sc->handle_, UV_READABLE, OnEvent);
   NanNew(sc->writable_cb_)->Call(NanGetCurrentContext()->Global(), 0, 0);
   if (tc.HasCaught())
-    FatalException(tc);
+    FatalException(Isolate::GetCurrent(), tc);
 }
 
 void OnEvent(uv_poll_t* handle, int status, int events) {
